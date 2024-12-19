@@ -12,7 +12,7 @@ import json
 import operator
 import ast
 from datetime import datetime
-import base64
+from utils import encode_image, clear_screenshot_dir, validate_url
 import uuid
 from qwen_vl_utils import process_vision_info
 import torch
@@ -50,19 +50,6 @@ class AgentState(TypedDict):
     image_analysis: []  # Analysis of the image
     coordinates: []  # Coordinates of the location on the screenshot
 
-def clear_screenshot_dir():
-    if os.path.exists("screenshots"):
-        for file in os.listdir("screenshots"):
-            os.remove(os.path.join("screenshots", file))
-        os.rmdir("screenshots")
-
-    os.makedirs("screenshots")
-
-# Function to encode the image
-def encode_image(image_path):
-    print("Encoding the image...")
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
 
 @tool
 def go_back(state):
@@ -77,16 +64,6 @@ def summarize_query(query):
         content='Shorten this sentence to search in the browser for getting best results and output only the query.')] + [
                                    query])
     return str(refined_query.content)
-
-def validate_url(url):
-    """Validate the URL."""
-    import requests
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            return True
-    except requests.exceptions.RequestException as e:
-        return False
 
 
 @tool
