@@ -1,6 +1,23 @@
 import base64
 import os
 import requests
+from typing_extensions import TypedDict
+from typing import Sequence, Annotated
+from langchain_core.messages import BaseMessage
+import operator
+from playwright.sync_api import Page
+
+
+# Encapsulate the state in a class
+class AgentState(TypedDict):
+    """Encapsulates the agent's state for message passing and browser interactions."""
+    page: Page  # Playwright page object
+    messages: Annotated[Sequence[BaseMessage], operator.add]  # List of AnyMessage (HumanMessage, SystemMessage, etc.)
+    query: str  # Query for the current task
+    screenshot_path: []  # Path to the screenshot image
+    image_analysis: []  # Analysis of the image
+    coordinates: []  # Coordinates of the location on the screenshot
+
 
 def encode_image(image_path):
     print("Encoding the image...")
